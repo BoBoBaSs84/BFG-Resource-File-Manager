@@ -23,50 +23,47 @@ along with BFG Resource File Manager Source Code.  If not, see <http://www.gnu.o
 */
 using System.Windows.Forms;
 
-namespace ResourceFileEditor.utils
+namespace ResourceFileEditor.Utils;
+
+public class NodeUtils
 {
-    class NodeUtils
-    {
-        public static void addNode(TreeNodeCollection root, TreeNode child)
-        {
-            TreeNode result = FindByName(root, child.Text);
-            if (result != null)
-            {
-                populateParent(result, child.Nodes);
-                //Console.WriteLine(child.Text);
-            }
-            else
-            {
-                root.Add(child);
-            }
-        }
+	public static void AddNode(TreeNodeCollection root, TreeNode child)
+	{
+		TreeNode result = FindByName(root, child.Text);
+		if (result != null)
+		{
+			PopulateParent(result, child.Nodes);
+			//Console.WriteLine(child.Text);
+		}
+		else
+		{
+			_ = root.Add(child);
+		}
+	}
 
-        public static void populateParent(TreeNode parent, TreeNodeCollection newChilds)
-        {
-            foreach (TreeNode subChild in newChilds)
-            {
-                TreeNode subKid = FindByName(parent.Nodes, subChild.Text);
-                if (subKid == null)
-                {
-                    parent.Nodes.Add(subChild);
-                }
-                else
-                {
-                    populateParent(subKid, subChild.Nodes);
-                }
-            }
-        }
+	public static void PopulateParent(TreeNode parent, TreeNodeCollection newChilds)
+	{
+		foreach (TreeNode subChild in newChilds)
+		{
+			TreeNode subKid = FindByName(parent.Nodes, subChild.Text);
+			if (subKid == null)
+			{
+				_ = parent.Nodes.Add(subChild);
+			}
+			else
+			{
+				PopulateParent(subKid, subChild.Nodes);
+			}
+		}
+	}
 
-        public static TreeNode FindByName(TreeNodeCollection root, string key)
-        {
-            foreach (TreeNode node in root)
-            {
-                if (node.Text == key)
-                {
-                    return node;
-                }
-            }
-            return null;
-        }
-    }
+	public static TreeNode FindByName(TreeNodeCollection root, string key)
+	{
+		foreach (TreeNode node in root)
+		{
+			if (node.Text == key)
+				return node;
+		}
+		return null;
+	}
 }

@@ -21,7 +21,7 @@ along with BFG Resource File Manager Source Code.  If not, see <http://www.gnu.o
 
 ===========================================================================
 */
-using ResourceFileEditor.utils;
+using ResourceFileEditor.Utils;
 using System;
 using System.IO;
 

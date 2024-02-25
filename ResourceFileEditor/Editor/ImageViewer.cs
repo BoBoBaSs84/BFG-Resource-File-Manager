@@ -23,7 +23,7 @@ along with BFG Resource File Manager Source Code.  If not, see <http://www.gnu.o
 */
 using ResourceFileEditor.Manager;
 using ResourceFileEditor.Manager.Image;
-using ResourceFileEditor.utils;
+using ResourceFileEditor.Utils;
 using StbImageSharp;
 using System;
 using System.Drawing;
@@ -44,7 +44,7 @@ namespace ResourceFileEditor.Editor
         }
         public void start(Panel panel, TreeNode node)
         {
-            string relativePath = PathParser.NodetoPath(node);
+            string relativePath = PathParser.NodeToPath(node);
             Stream file = manager.loadEntry(relativePath);
             PictureBox pictureBox = new PictureBox();
             pictureBox.Width = panel.Width;

@@ -24,52 +24,44 @@ along with BFG Resource File Manager Source Code.  If not, see <http://www.gnu.o
 using System;
 using System.IO;
 
-namespace ResourceFileEditor.utils
+namespace ResourceFileEditor.Utils;
+
+public class FileCheck
 {
-    class FileCheck
-    {
+	public enum FileTypes
+	{
+		IMAGE,
+		UNKNOWN,
+		AUDIO
+	}
 
-        public enum FileTypes
-        {
-           IMAGE, UNKNOWN, AUDIO
-        }
-        public static Boolean isFile(string name)
-        {
-            return name.Contains(".");
-        }
+	public static bool IsFile(string name)
+		=> name.Contains(".");
 
-        public static Boolean isExportableToStandard(string name)
-        {
-            return name.EndsWith("idwav") || name.EndsWith("bimage");
-        }
+	public static bool IsExportableToStandard(string name)
+		=> name.EndsWith("idwav", StringComparison.OrdinalIgnoreCase) || name.EndsWith("bimage", StringComparison.OrdinalIgnoreCase);
 
-        public static FileTypes getFileType(Stream file, string filename)
-        {
-            string fileext = filename.Substring(filename.LastIndexOf(".") + 1);
-            if (fileext != null)
-            {
-                switch (fileext)
-                {
-                    case "tga":
-                    case "bimage":
-                    case "jpg":
-                    case "png":
-                        return FileTypes.IMAGE;
-                    case "wav":
-                    case "idwav":
-                        return FileTypes.AUDIO;
-                }
-            }
-            return FileTypes.UNKNOWN;
-        }
+	public static FileTypes GetFileType(Stream file, string filename)
+	{
+		string fileext = filename.Substring(filename.LastIndexOf(".") + 1);
+		
+		if (fileext != null)
+		{
+			switch (fileext)
+			{
+				case "tga":
+				case "bimage":
+				case "jpg":
+				case "png":
+					return FileTypes.IMAGE;
+				case "wav":
+				case "idwav":
+					return FileTypes.AUDIO;
+			}
+		}
+		return FileTypes.UNKNOWN;
+	}
 
-        public static string getPathSeparator()
-        {
-            if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
-            {
-                return "/";
-            }
-            return "\\";
-        }
-    }
+	public static string GetPathSeparator()
+		=> Path.DirectorySeparatorChar.ToString();
 }

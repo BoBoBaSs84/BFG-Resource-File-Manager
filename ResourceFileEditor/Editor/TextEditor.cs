@@ -22,7 +22,7 @@ along with BFG Resource File Manager Source Code.  If not, see <http://www.gnu.o
 ===========================================================================
 */
 using ResourceFileEditor.Manager;
-using ResourceFileEditor.utils;
+using ResourceFileEditor.Utils;
 using System;
 using System.IO;
 using System.Windows.Forms;
@@ -42,7 +42,7 @@ namespace ResourceFileEditor.Editor
         public void start(Panel panel, TreeNode node)
         {
             TextBox textBox = new TextBox();
-            string relativePath = PathParser.NodetoPath(node);
+            string relativePath = PathParser.NodeToPath(node);
             TextReader textReader = new StreamReader(manager.loadEntry(relativePath));
             textBox.Text = textReader.ReadToEnd();
             textBox.Multiline = true;

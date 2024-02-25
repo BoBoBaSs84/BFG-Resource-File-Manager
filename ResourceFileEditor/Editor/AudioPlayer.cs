@@ -23,7 +23,7 @@ along with BFG Resource File Manager Source Code.  If not, see <http://www.gnu.o
 */
 using ResourceFileEditor.Manager;
 using ResourceFileEditor.Manager.Audio;
-using ResourceFileEditor.utils;
+using ResourceFileEditor.Utils;
 using System;
 using System.IO;
 using System.Media;
@@ -43,7 +43,7 @@ namespace ResourceFileEditor.Editor
         }
         public void start(Panel panel, TreeNode node)
         {
-            string relativePath = PathParser.NodetoPath(node);
+            string relativePath = PathParser.NodeToPath(node);
             Stream file = manager.loadEntry(relativePath);
             file.Seek(0, SeekOrigin.Begin);
             if (relativePath.EndsWith("idwav"))

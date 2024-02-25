@@ -23,7 +23,7 @@ along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/lice
 */
 using ResourceFileEditor.Editor;
 using ResourceFileEditor.Manager;
-using ResourceFileEditor.utils;
+using ResourceFileEditor.Utils;
 using System;
 using System.Drawing;
 using System.IO;
@@ -155,13 +155,13 @@ namespace ResourceFileEditor
             treeView1.SelectedNode = e.Node;
             if (e.Button == MouseButtons.Right)
             {
-                addFolderContextMenuItem.Visible = !FileCheck.isFile(e.Node.Text);
+                addFolderContextMenuItem.Visible = !FileCheck.IsFile(e.Node.Text);
                 deleteEntryContextMenuItem.Visible = true;
-                deleteEntryContextMenuItem.Text = FileCheck.isFile(e.Node.Text) ? "Delete Entry" : "Delete Folder";
+                deleteEntryContextMenuItem.Text = FileCheck.IsFile(e.Node.Text) ? "Delete Entry" : "Delete Folder";
                 extractEntryContextMenuItem.Visible = true;
-                extractEntryContextMenuItem.Text = FileCheck.isFile(e.Node.Text) ? "Extract Entry" : "Extract Folder";
-                exportToStandardFormatToolStripMenuItem.Visible = FileCheck.isExportableToStandard(e.Node.Text);
-                addContextMenuItem.Visible = !FileCheck.isFile(e.Node.Text);
+                extractEntryContextMenuItem.Text = FileCheck.IsFile(e.Node.Text) ? "Extract Entry" : "Extract Folder";
+                exportToStandardFormatToolStripMenuItem.Visible = FileCheck.IsExportableToStandard(e.Node.Text);
+                addContextMenuItem.Visible = !FileCheck.IsFile(e.Node.Text);
                 contextMenuStrip1.Show(treeView1, e.Location);
             }
         }
@@ -186,7 +186,7 @@ namespace ResourceFileEditor
                 return;
             }
             TreeNode subNode = new TreeNode(name);
-            if (FileCheck.isFile(node.Text))
+            if (FileCheck.IsFile(node.Text))
             {
                 MessageBox.Show("You have Selected a file. Please select a folder", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -206,9 +206,9 @@ namespace ResourceFileEditor
 
         private void DeleteEntry_logic(TreeNode node, bool removeNode = true)
         {   
-            if (FileCheck.isFile(node.Text))
+            if (FileCheck.IsFile(node.Text))
             {
-                string relativePath = PathParser.NodetoPath(node);
+                string relativePath = PathParser.NodeToPath(node);
                 manager.DeleteEntry(relativePath);
                 updateToolStripBar(toolStripStatusLabel1.Text);
             }
@@ -245,14 +245,14 @@ namespace ResourceFileEditor
             {
                 MessageBox.Show("Please select a folder", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            string relativePath = PathParser.NodetoPath(node);
+            string relativePath = PathParser.NodeToPath(node);
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             fbd.Description = "Select Folder to extract the file into";
             fbd.ShowDialog();
 
             if (fbd.SelectedPath != null)
             {
-                if (FileCheck.isFile(relativePath))
+                if (FileCheck.IsFile(relativePath))
                 {
                     manager.ExtractEntry(relativePath, fbd.SelectedPath);
                 } else
@@ -278,20 +278,20 @@ namespace ResourceFileEditor
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            addFolderToolStripMenuItem.Visible = !FileCheck.isFile(e.Node.Text);
+            addFolderToolStripMenuItem.Visible = !FileCheck.IsFile(e.Node.Text);
             deleteEntryToolStripMenuItem.Visible = true;
-            deleteEntryToolStripMenuItem.Text = FileCheck.isFile(e.Node.Text) ? "Delete Entry" : "Delete Folder";
+            deleteEntryToolStripMenuItem.Text = FileCheck.IsFile(e.Node.Text) ? "Delete Entry" : "Delete Folder";
             extractEntryToolStripMenuItem.Visible = true;
-            extractEntryToolStripMenuItem.Text = FileCheck.isFile(e.Node.Text) ? "Extract Entry" : "Extract Folder";
-            addToolStripMenuItem.Visible = !FileCheck.isFile(e.Node.Text);
-            exportToStandardFormatToolStripMenuItem1.Visible = FileCheck.isExportableToStandard(e.Node.Text);
+            extractEntryToolStripMenuItem.Text = FileCheck.IsFile(e.Node.Text) ? "Extract Entry" : "Extract Folder";
+            addToolStripMenuItem.Visible = !FileCheck.IsFile(e.Node.Text);
+            exportToStandardFormatToolStripMenuItem1.Visible = FileCheck.IsExportableToStandard(e.Node.Text);
             splitContainer1.Panel2.Controls.Clear();
-            if (FileCheck.isFile(e.Node.Text))
+            if (FileCheck.IsFile(e.Node.Text))
             {
-                string relativePath = PathParser.NodetoPath(e.Node);
+                string relativePath = PathParser.NodeToPath(e.Node);
                 toolStripStatusLabel3.Text = e.Node.Text + " file Size: " + ConvertBytesToString(manager.GetFileSize(relativePath));
                 //GK: Get FileType from name extension and determine how to load it
-                editorFactory.openEditor(FileCheck.getFileType(manager.loadEntry(PathParser.NodetoPath(e.Node)), e.Node.Text), splitContainer1.Panel2, e.Node);
+                editorFactory.openEditor(FileCheck.GetFileType(manager.loadEntry(PathParser.NodeToPath(e.Node)), e.Node.Text), splitContainer1.Panel2, e.Node);
 
             }
         }
@@ -398,8 +398,8 @@ namespace ResourceFileEditor
             for (int i = 0; i < files.Length; i++)
             {
                 Console.WriteLine(files[i]);
-                string relativeName = files[i].Substring(files[i].LastIndexOf(FileCheck.getPathSeparator()) + 1);
-                if (FileCheck.isFile(relativeName))
+                string relativeName = files[i].Substring(files[i].LastIndexOf(FileCheck.GetPathSeparator()) + 1);
+                if (FileCheck.IsFile(relativeName))
                 {
                     Stream file = File.OpenRead(files[i]);
                     TreeNode node = treeView1.SelectedNode;
@@ -420,13 +420,13 @@ namespace ResourceFileEditor
                 MessageBox.Show("Please select a folder", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             string fullPath = ((FileStream)myStream).Name;
-            string relativePath = fullPath.Substring(fullPath.LastIndexOf(FileCheck.getPathSeparator() + (parentDirectory != null ? parentDirectory : "")) + 1);
+            string relativePath = fullPath.Substring(fullPath.LastIndexOf(FileCheck.GetPathSeparator() + (parentDirectory != null ? parentDirectory : "")) + 1);
             if (Environment.OSVersion.Platform != PlatformID.Unix && Environment.OSVersion.Platform != PlatformID.MacOSX)
             {
                 relativePath = relativePath.Replace("\\", "/");
             }
-            string relativeDirectory = PathParser.NodetoPath(node);
-            if (FileCheck.isFile(relativeDirectory))
+            string relativeDirectory = PathParser.NodeToPath(node);
+            if (FileCheck.IsFile(relativeDirectory))
             {
                 MessageBox.Show("You have Selected a file. Please select a folder", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -448,7 +448,7 @@ namespace ResourceFileEditor
             {
                 MessageBox.Show("Please select a folder", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            string relativePath = PathParser.NodetoPath(node);
+            string relativePath = PathParser.NodeToPath(node);
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             fbd.Description = "Select Folder to export the file into";
             fbd.ShowDialog();

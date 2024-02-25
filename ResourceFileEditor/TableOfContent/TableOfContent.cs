@@ -21,7 +21,7 @@ along with BFG Resource File Manager Source Code.  If not, see <http://www.gnu.o
 
 ===========================================================================
 */
-using ResourceFileEditor.utils;
+using ResourceFileEditor.Utils;
 using System;
 using System.IO;
 
@@ -48,11 +48,11 @@ namespace ResourceFileEditor.TableOfContent
                 tocs[i].Filename = System.Text.Encoding.UTF8.GetString(buffer, pos, filenameLength);
                 pos += filenameLength;
                 Array.Copy(buffer, pos, tempBuffer, 0, 4);
-                ByteSwap.swapBytes(tempBuffer);
+                ByteSwap.SwapBytes(tempBuffer);
                 tocs[i].filePos = BitConverter.ToUInt32(tempBuffer, 0);
                 pos += 4;
                 Array.Copy(buffer, pos, tempBuffer, 0, 4);
-                ByteSwap.swapBytes(tempBuffer);
+                ByteSwap.SwapBytes(tempBuffer);
                 tocs[i].fileSize = BitConverter.ToUInt32(tempBuffer, 0);
                 pos += 4;
             }
@@ -74,10 +74,10 @@ namespace ResourceFileEditor.TableOfContent
             buffer = System.Text.Encoding.UTF8.GetBytes(Filename);
             ms.Write(buffer, 0, Filename.Length);
             buffer = BitConverter.GetBytes(filePos);
-            ByteSwap.swapBytes(buffer);
+            ByteSwap.SwapBytes(buffer);
             ms.Write(buffer, 0, 4);
             buffer = BitConverter.GetBytes(fileSize);
-            ByteSwap.swapBytes(buffer);
+            ByteSwap.SwapBytes(buffer);
             ms.Write(buffer, 0, 4);
 
             return ms.ToArray();

@@ -23,7 +23,7 @@ along with BFG Resource File Manager Source Code.  If not, see <http://www.gnu.o
 */
 using ResourceFileEditor.Manager.Audio;
 using ResourceFileEditor.TableOfContent;
-using ResourceFileEditor.utils;
+using ResourceFileEditor.Utils;
 using StbImageSharp;
 using System;
 using System.Collections.Generic;
@@ -69,7 +69,7 @@ namespace ResourceFileEditor.Manager
                         contents = new List<TableOfContentEntry>(TableOfContentEntry.parseBytes(toc, Convert.ToInt32(numberOfFiles)));
                         for (int i = 0; i < contents.Count; i++)
                         {
-                            NodeUtils.addNode(managerUI.GetTreeView().Nodes[0].Nodes, PathParser.parsePath(contents[i].Filename));
+                            NodeUtils.AddNode(managerUI.GetTreeView().Nodes[0].Nodes, PathParser.ParsePath(contents[i].Filename));
                             // form1.GetTreeView().Nodes.Add(PathParser.parsePath(tocs[i].Filename));
                             Console.WriteLine(contents[i].Filename);
                         }
@@ -180,7 +180,7 @@ namespace ResourceFileEditor.Manager
             contents.Add(toc);
             isDirty = true;
             managerUI.UpdateTitle(this.GetResourceFileName(), isDirty);
-            NodeUtils.addNode(managerUI.GetTreeView().Nodes[0].Nodes, PathParser.parsePath(relativePath));
+            NodeUtils.AddNode(managerUI.GetTreeView().Nodes[0].Nodes, PathParser.ParsePath(relativePath));
         }
 
         public void CreateFile()
@@ -413,7 +413,7 @@ namespace ResourceFileEditor.Manager
         {
             if (resourceFile != null)
             {
-                int lastIndex = resourceFile.LastIndexOf(FileCheck.getPathSeparator());
+                int lastIndex = resourceFile.LastIndexOf(FileCheck.GetPathSeparator());
                 return resourceFile.Substring(lastIndex + 1);
             }
             return null;
