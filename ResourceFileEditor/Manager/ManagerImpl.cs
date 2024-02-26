@@ -58,14 +58,14 @@ namespace ResourceFileEditor.Manager
             {
                 try
                 {
-                    UInt32 magic = FileManager.FileManager.readUint32Swapped(file, 0x0);
+                    UInt32 magic = FileManager.FileManager.ReadUint32Swapped(file, 0x0);
                     if (magic == RESOURCE_FILE_MAGIC)
                     {
-                        UInt32 tableOffset = FileManager.FileManager.readUint32Swapped(file, 4);
-                        UInt32 tableLength = FileManager.FileManager.readUint32Swapped(file, 8);
-                        UInt32 numberOfFiles = FileManager.FileManager.readUint32Swapped(file, Convert.ToInt32(tableOffset));
+                        UInt32 tableOffset = FileManager.FileManager.ReadUint32Swapped(file, 4);
+                        UInt32 tableLength = FileManager.FileManager.ReadUint32Swapped(file, 8);
+                        UInt32 numberOfFiles = FileManager.FileManager.ReadUint32Swapped(file, Convert.ToInt32(tableOffset));
                         Console.WriteLine("Number of Files: " + numberOfFiles);
-                        byte[] toc = FileManager.FileManager.readByteArray(file, Convert.ToInt32(tableOffset + 4), Convert.ToInt32(tableLength));
+                        byte[] toc = FileManager.FileManager.ReadByteArray(file, Convert.ToInt32(tableOffset + 4), Convert.ToInt32(tableLength));
                         contents = new List<TableOfContentEntry>(TableOfContentEntry.parseBytes(toc, Convert.ToInt32(numberOfFiles)));
                         for (int i = 0; i < contents.Count; i++)
                         {
@@ -101,9 +101,9 @@ namespace ResourceFileEditor.Manager
                     {
                         tempres = resourceFile;
                     }
-                    FileManager.FileManager.writeUint32Swapped(file, 0x0, RESOURCE_FILE_MAGIC);
-                    FileManager.FileManager.writeUint32Swapped(file, 4, 0);
-                    FileManager.FileManager.writeUint32Swapped(file, 8, 0);
+                    FileManager.FileManager.WriteUint32Swapped(file, 0x0, RESOURCE_FILE_MAGIC);
+                    FileManager.FileManager.WriteUint32Swapped(file, 4, 0);
+                    FileManager.FileManager.WriteUint32Swapped(file, 8, 0);
                     UInt32 dataOffset = 0;
                     for (int i = 0; i < contents.Count; i++)
                     {
@@ -112,7 +112,7 @@ namespace ResourceFileEditor.Manager
                         if (contents[i].file == null)
                         {
                             Stream resourceStream = File.OpenRead(tempres);
-                            buffer = FileManager.FileManager.readByteArray(resourceStream, (int)contents[i].filePos, (int)contents[i].fileSize);
+                            buffer = FileManager.FileManager.ReadByteArray(resourceStream, (int)contents[i].filePos, (int)contents[i].fileSize);
                             resourceStream.Close();
                         }
                         else
@@ -128,22 +128,22 @@ namespace ResourceFileEditor.Manager
                             contents[i].file.Close();
                             contents[i].file = null;
                         }
-                        FileManager.FileManager.writeByteArray(file, (int)(RESOURCE_FILE_HEAD_OFFSET + dataOffset), buffer);
+                        FileManager.FileManager.WriteByteArray(file, (int)(RESOURCE_FILE_HEAD_OFFSET + dataOffset), buffer);
                         contents[i].filePos = (uint)(RESOURCE_FILE_HEAD_OFFSET + dataOffset);
                         dataOffset += contents[i].fileSize;
                     }
-                    FileManager.FileManager.writeUint32Swapped(file, 4, (uint)(RESOURCE_FILE_HEAD_OFFSET + dataOffset));
-                    FileManager.FileManager.writeUint32Swapped(file, (int)(RESOURCE_FILE_HEAD_OFFSET + dataOffset), (uint)contents.Count);
+                    FileManager.FileManager.WriteUint32Swapped(file, 4, (uint)(RESOURCE_FILE_HEAD_OFFSET + dataOffset));
+                    FileManager.FileManager.WriteUint32Swapped(file, (int)(RESOURCE_FILE_HEAD_OFFSET + dataOffset), (uint)contents.Count);
 
                     Int32 tableOffset = (int)(RESOURCE_FILE_HEAD_OFFSET + dataOffset + 4);
                     UInt32 tableEntryOffset = 0;
                     for (int i = 0; i < contents.Count; i++)
                     {
                         byte[] buffer = contents[i].parseToBytes();
-                        FileManager.FileManager.writeByteArray(file, (int)(tableOffset + tableEntryOffset), buffer);
+                        FileManager.FileManager.WriteByteArray(file, (int)(tableOffset + tableEntryOffset), buffer);
                         tableEntryOffset += Convert.ToUInt32(buffer.Length);
                     }
-                    FileManager.FileManager.writeUint32Swapped(file, 8, tableEntryOffset);
+                    FileManager.FileManager.WriteUint32Swapped(file, 8, tableEntryOffset);
                     if (((FileStream)file).Name == resourceFile)
                     {
 
@@ -239,7 +239,7 @@ namespace ResourceFileEditor.Manager
                 else
                 {
                     Stream resourceStream = File.OpenRead(resourceFile);
-                    byte[] buffer = FileManager.FileManager.readByteArray(resourceStream, (int)content.filePos, (int)content.fileSize);
+                    byte[] buffer = FileManager.FileManager.ReadByteArray(resourceStream, (int)content.filePos, (int)content.fileSize);
                     file.Write(buffer, 0, buffer.Length);
                     resourceStream.Close();
                 }
@@ -271,7 +271,7 @@ namespace ResourceFileEditor.Manager
                 else
                 {
                     Stream resourceStream = File.OpenRead(resourceFile);
-                    byte[] buffer = FileManager.FileManager.readByteArray(resourceStream, (int)content.filePos, (int)content.fileSize);
+                    byte[] buffer = FileManager.FileManager.ReadByteArray(resourceStream, (int)content.filePos, (int)content.fileSize);
 
                     file.Write(buffer, 0, buffer.Length);
                     resourceStream.Close();
@@ -383,12 +383,12 @@ namespace ResourceFileEditor.Manager
             {
                 if (content.file != null)
                 {
-                    return new MemoryStream(FileManager.FileManager.readByteArray(content.file, (int)0, (int)content.fileSize));
+                    return new MemoryStream(FileManager.FileManager.ReadByteArray(content.file, (int)0, (int)content.fileSize));
                 }
                 else
                 {
                     Stream resourceStream = File.OpenRead(resourceFile);
-                    byte[] buffer = FileManager.FileManager.readByteArray(resourceStream, (int)content.filePos, (int)content.fileSize);
+                    byte[] buffer = FileManager.FileManager.ReadByteArray(resourceStream, (int)content.filePos, (int)content.fileSize);
                     resourceStream.Close();
                     return new MemoryStream(buffer);
                 }

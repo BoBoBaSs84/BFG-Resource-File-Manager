@@ -21,117 +21,115 @@ along with BFG Resource File Manager Source Code.  If not, see <http://www.gnu.o
 
 ===========================================================================
 */
-using ResourceFileEditor.Utils;
 using System;
 using System.IO;
 
-namespace ResourceFileEditor.FileManager
+namespace ResourceFileEditor.FileManager;
+
+public sealed class FileManager
 {
-    class FileManager
-    {
-        public static UInt16 readUint16(Stream stream, int pos)
-        {
-            byte[] buffer = new byte[2];
-            stream.Position = pos;
-            stream.Read(buffer, 0, buffer.Length);
-            return BitConverter.ToUInt16(buffer, 0);
-        }
+	public static ushort ReadUint16(Stream stream, int pos)
+	{
+		byte[] buffer = new byte[2];
+		stream.Position = pos;
+		_ = stream.Read(buffer, 0, buffer.Length);
+		return BitConverter.ToUInt16(buffer, 0);
+	}
 
-        public static UInt16 readUint16Swapped(Stream stream, int pos)
-        {
-            byte[] buffer = new byte[2];
-            stream.Position = pos;
-            stream.Read(buffer, 0, buffer.Length);
-            Array.Reverse(buffer);
-            return BitConverter.ToUInt16(buffer, 0);
-        }
+	public static ushort ReadUint16Swapped(Stream stream, int pos)
+	{
+		byte[] buffer = new byte[2];
+		stream.Position = pos;
+		_ = stream.Read(buffer, 0, buffer.Length);
+		Array.Reverse(buffer);
+		return BitConverter.ToUInt16(buffer, 0);
+	}
 
-        public static UInt32 readUint32(Stream stream, int pos)
-        {
-            byte[] buffer = new byte[4];
-            stream.Position = pos;
-            stream.Read(buffer, 0, buffer.Length);
-            return BitConverter.ToUInt32(buffer, 0);
-        }
+	public static uint ReadUint32(Stream stream, int pos)
+	{
+		byte[] buffer = new byte[4];
+		stream.Position = pos;
+		_ = stream.Read(buffer, 0, buffer.Length);
+		return BitConverter.ToUInt32(buffer, 0);
+	}
 
-        public static UInt32 readUint32Swapped(Stream stream, int pos)
-        {
-            byte[] buffer = new byte[4];
-            stream.Position = pos;
-            stream.Read(buffer, 0, buffer.Length);
-            Array.Reverse(buffer);
-            return BitConverter.ToUInt32(buffer, 0);
-        }
+	public static uint ReadUint32Swapped(Stream stream, int pos)
+	{
+		byte[] buffer = new byte[4];
+		stream.Position = pos;
+		_ = stream.Read(buffer, 0, buffer.Length);
+		Array.Reverse(buffer);
+		return BitConverter.ToUInt32(buffer, 0);
+	}
 
-        public static int readInt(Stream stream, int pos)
-        {
-            byte[] buffer = new byte[4];
-            stream.Position = pos;
-            stream.Read(buffer, 0, buffer.Length);
-            return BitConverter.ToInt32(buffer, 0);
-        }
+	public static int ReadInt32(Stream stream, int pos)
+	{
+		byte[] buffer = new byte[4];
+		stream.Position = pos;
+		_ = stream.Read(buffer, 0, buffer.Length);
+		return BitConverter.ToInt32(buffer, 0);
+	}
 
-        public static int readIntSwapped(Stream stream, int pos)
-        {
-            byte[] buffer = new byte[4];
-            stream.Position = pos;
-            stream.Read(buffer, 0, buffer.Length);
-            Array.Reverse(buffer);
-            return BitConverter.ToInt32(buffer, 0);
-        }
+	public static int ReadInt32Swapped(Stream stream, int pos)
+	{
+		byte[] buffer = new byte[4];
+		stream.Position = pos;
+		_ = stream.Read(buffer, 0, buffer.Length);
+		Array.Reverse(buffer);
+		return BitConverter.ToInt32(buffer, 0);
+	}
 
-        public static UInt64 readUint64(Stream stream, int pos)
-        {
-            byte[] buffer = new byte[4];
-            stream.Position = pos;
-            stream.Read(buffer, 0, buffer.Length);
-            return BitConverter.ToUInt64(buffer, 0);
-        }
+	public static ulong ReadUint64(Stream stream, int pos)
+	{
+		byte[] buffer = new byte[8];
+		stream.Position = pos;
+		_ = stream.Read(buffer, 0, buffer.Length);
+		return BitConverter.ToUInt64(buffer, 0);
+	}
 
-        public static UInt64 readUint64Swapped(Stream stream, int pos)
-        {
-            byte[] buffer = new byte[8];
-            stream.Position = pos;
-            stream.Read(buffer, 0, buffer.Length);
-            Array.Reverse(buffer);
-            return BitConverter.ToUInt64(buffer, 0);
-        }
+	public static ulong ReadUint64Swapped(Stream stream, int pos)
+	{
+		byte[] buffer = new byte[8];
+		stream.Position = pos;
+		_ = stream.Read(buffer, 0, buffer.Length);
+		Array.Reverse(buffer);
+		return BitConverter.ToUInt64(buffer, 0);
+	}
 
-        public static byte[] readByteArray(Stream stream, int pos, int size)
-        {
-            byte[] buffer = new byte[size];
-            stream.Position = pos;
-            stream.Read(buffer, 0, buffer.Length);
-            return buffer;
-        }
+	public static byte[] ReadByteArray(Stream stream, int pos, int size)
+	{
+		byte[] buffer = new byte[size];
+		stream.Position = pos;
+		_ = stream.Read(buffer, 0, buffer.Length);
+		return buffer;
+	}
 
-        public static void writeUint32(Stream stream, int pos, UInt32 value)
-        {
-            byte[] buffer = BitConverter.GetBytes(value);
-            stream.Position = pos;
-            stream.Write(buffer, 0, buffer.Length);
-        }
+	public static void WriteUint32(Stream stream, int pos, uint value)
+	{
+		byte[] buffer = BitConverter.GetBytes(value);
+		stream.Position = pos;
+		stream.Write(buffer, 0, buffer.Length);
+	}
 
-        public static void writeUint32Swapped(Stream stream, int pos, UInt32 value)
-        {
-            byte[] buffer = BitConverter.GetBytes(value);
-            Array.Reverse(buffer);
-            stream.Position = pos;
-            stream.Write(buffer, 0, buffer.Length);
-        }
+	public static void WriteUint32Swapped(Stream stream, int pos, uint value)
+	{
+		byte[] buffer = BitConverter.GetBytes(value);
+		Array.Reverse(buffer);
+		stream.Position = pos;
+		stream.Write(buffer, 0, buffer.Length);
+	}
 
-        public static void writeUint64Swapped(Stream stream, int pos, UInt64 value)
-        {
-            byte[] buffer = BitConverter.GetBytes(value);
-            Array.Reverse(buffer);
-            stream.Position = pos;
-            stream.Write(buffer, 0, buffer.Length);
-        }
+	public static void WriteUint64Swapped(Stream stream, int pos, ulong value)
+	{
+		byte[] buffer = BitConverter.GetBytes(value);
+		Array.Reverse(buffer);
+		stream.Position = pos;
+		stream.Write(buffer, 0, buffer.Length);
+	}
 
-        public static void writeByteArray(Stream stream, int pos, byte[] data)
-        {
-            stream.Position = pos;
-            stream.Write(data, 0, data.Length);
-        }
-    }
+	public static void WriteByteArray(Stream stream, int pos, byte[] data)
+	{
+		stream.Position = pos;
+		stream.Write(data, 0, data.Length);
+	}
 }
