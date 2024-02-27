@@ -13,7 +13,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Content Include="ResourceFileEditor.ico" />
+	  <EmbeddedResource Include="ResourceFileEditor.ico" />
 	</ItemGroup>
 	
 	<ItemGroup>
@@ -31,8 +31,8 @@
   <ItemGroup>
     <PackageReference Include="BCnEncoder.Net45" Version="0.0.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.6" />
-    <PackageReference Include="StbImageSharp" Version="2.27.13" />
+		<PackageReference Include="StbImageSharp" Version="2.27.13" />
     <PackageReference Include="StbImageWriteSharp" Version="1.16.7" />
   </ItemGroup>
-	
+
 </Project>

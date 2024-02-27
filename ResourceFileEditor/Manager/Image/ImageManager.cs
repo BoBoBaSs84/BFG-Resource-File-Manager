@@ -1,10 +1,12 @@
-﻿using System;
+﻿using ResourceFileEditor.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using FM = ResourceFileEditor.FileManager.FileManager;
 
 namespace ResourceFileEditor.Manager.Image;
 
-internal class ImageManager
+public class ImageManager
 {
 	private const uint IMAGE_FILE_MAGIC = ('B' << 0) | ('I' << 8) | ('M' << 16) | (10 << 24);
 
@@ -13,23 +15,23 @@ internal class ImageManager
 		Stream img = null;
 
 		int index = 0;
-		_ = DateTime.FromBinary((long)FileManager.FileManager.ReadUint64Swapped(file, index));
+		_ = DateTime.FromBinary((long)FM.ReadUint64Swapped(file, index));
 		index += 8;
-		uint magic = FileManager.FileManager.ReadUint32Swapped(file, index);
+		uint magic = FM.ReadUint32Swapped(file, index);
 		index += 4;
 		if (magic == IMAGE_FILE_MAGIC)
 		{
-			uint texType = FileManager.FileManager.ReadUint32Swapped(file, index);
+			uint texType = FM.ReadUint32Swapped(file, index);
 			index += 4;
-			uint format = FileManager.FileManager.ReadUint32Swapped(file, index);
+			uint format = FM.ReadUint32Swapped(file, index);
 			index += 4;
-			uint colorFormat = FileManager.FileManager.ReadUint32Swapped(file, index);
+			uint colorFormat = FM.ReadUint32Swapped(file, index);
 			index += 4;
-			_ = FileManager.FileManager.ReadUint32Swapped(file, index);
+			_ = FM.ReadUint32Swapped(file, index);
 			index += 4;
-			_ = FileManager.FileManager.ReadUint32Swapped(file, index);
+			_ = FM.ReadUint32Swapped(file, index);
 			index += 4;
-			uint numLevels = FileManager.FileManager.ReadUint32Swapped(file, index);
+			uint numLevels = FM.ReadUint32Swapped(file, index);
 			index += 4;
 			if (texType == (uint)TextureType.TT_CUBIC)
 			{
@@ -40,17 +42,17 @@ internal class ImageManager
 			for (int i = 0; i < numLevels; i++)
 			{
 				images.Add(new ImageData());
-				images[i].level = FileManager.FileManager.ReadUint32Swapped(file, index);
+				images[i].level = FM.ReadUint32Swapped(file, index);
 				index += 4;
-				images[i].destZ = FileManager.FileManager.ReadUint32Swapped(file, index);
+				images[i].destZ = FM.ReadUint32Swapped(file, index);
 				index += 4;
-				images[i].width = FileManager.FileManager.ReadUint32Swapped(file, index);
+				images[i].width = FM.ReadUint32Swapped(file, index);
 				index += 4;
-				images[i].height = FileManager.FileManager.ReadUint32Swapped(file, index);
+				images[i].height = FM.ReadUint32Swapped(file, index);
 				index += 4;
-				images[i].dataSize = FileManager.FileManager.ReadUint32Swapped(file, index);
+				images[i].dataSize = FM.ReadUint32Swapped(file, index);
 				index += 4;
-				images[i].data = FileManager.FileManager.ReadByteArray(file, index, (int)images[i].dataSize);
+				images[i].data = FM.ReadByteArray(file, index, (int)images[i].dataSize);
 				index += (int)images[i].dataSize;
 			}
 			//TODO Multilevel Textures
@@ -119,5 +121,107 @@ internal class ImageManager
 		StbImageWriteSharp.ImageWriter imageWriter = new();
 		imageWriter.WriteTga(data, (int)image.width, (int)image.height, StbImageWriteSharp.ColorComponents.RedGreenBlueAlpha, imageStream);
 		return imageStream;
+	}
+
+	/// <summary>
+	/// Loads a <see cref="BimageFile"/> from the provided <see cref="Stream"/>.
+	/// </summary>
+	/// <param name="stream">The bimage file stream.</param>
+	/// <returns>The created <see cref="BimageFile"/>.</returns>
+	/// <exception cref="FileFormatException">If the provided image is not a bimage format.</exception>
+	public static BimageFile LoadBimage(Stream stream)
+	{
+		int index = default;
+		DateTime timeStamp = DateTime.FromBinary((long)FM.ReadUint64Swapped(stream, index));
+		index += 8;
+		uint magic = FM.ReadUint32Swapped(stream, index);
+		index += 4;
+
+		if (magic != IMAGE_FILE_MAGIC)
+			throw new FileFormatException("The provided image is not a bimage format.");
+
+		TextureType textureType = (TextureType)FM.ReadUint32Swapped(stream, index);
+		index += 4;
+		TextureFormat textureFormat = (TextureFormat)FM.ReadUint32Swapped(stream, index);
+		index += 4;
+		ColorFormat colorFormat = (ColorFormat)FM.ReadUint32Swapped(stream, index);
+		index += 4;
+		uint width = FM.ReadUint32Swapped(stream, index);
+		index += 4;
+		uint height = FM.ReadUint32Swapped(stream, index);
+		index += 4;
+		uint levels = FM.ReadUint32Swapped(stream, index);
+		index += 4;
+
+		if (textureType == TextureType.TT_CUBIC)
+			levels *= 6;
+
+		List<Bimage> bimages = [];
+		for (int i = 0; i < levels; i++)
+		{
+			uint iLevel = FM.ReadUint32Swapped(stream, index);
+			index += 4;
+			uint iDestZ = FM.ReadUint32Swapped(stream, index);
+			index += 4;
+			uint iWidth = FM.ReadUint32Swapped(stream, index);
+			index += 4;
+			uint iHeight = FM.ReadUint32Swapped(stream, index);
+			index += 4;
+			uint iSize = FM.ReadUint32Swapped(stream, index);
+			index += 4;
+			byte[] iData = FM.ReadByteArray(stream, index, (int)iSize);
+			index += (int)iSize;
+
+			Bimage bimage = new(iLevel, iDestZ, iWidth, iHeight, iSize, iData);
+			bimages.Add(bimage);
+		}
+
+		return new(timeStamp, textureType, textureFormat, colorFormat, width, height, [.. bimages]);
+	}
+
+	/// <summary>
+	/// Saves a provided <see cref="BimageFile"/> into a <see cref="Stream"/>.
+	/// </summary>
+	/// <param name="bimage">The <see cref="BimageFile"/> to save.</param>
+	/// <returns>A <see cref="Stream"/> that is <u><b>not</b></u> disposed.</returns>
+	public static Stream SaveBimage(BimageFile bimage)
+	{
+		int index = default;
+		MemoryStream stream = new();
+
+		FM.WriteUint64Swapped(stream, index, (ulong)bimage.TimeStamp.Ticks);
+		index += 8;
+		FM.WriteUint32Swapped(stream, index, BimageFile.Magic);
+		index += 4;
+		FM.WriteUint32Swapped(stream, index, (uint)bimage.TextureType);
+		index += 4;
+		FM.WriteUint32Swapped(stream, index, (uint)bimage.TextureFormat);
+		index += 4;
+		FM.WriteUint32Swapped(stream, index, (uint)bimage.ColorFormat);
+		index += 4;
+		FM.WriteUint32Swapped(stream, index, bimage.Width);
+		index += 4;
+		FM.WriteUint32Swapped(stream, index, bimage.Height);
+		index += 4;
+		FM.WriteUint32Swapped(stream, index, bimage.Levels);
+		index += 4;
+
+		foreach (Bimage image in bimage.Images)
+		{
+			FM.WriteUint32Swapped(stream, index, image.Level);
+			index += 4;
+			FM.WriteUint32Swapped(stream, index, image.DestZ);
+			index += 4;
+			FM.WriteUint32Swapped(stream, index, image.Width);
+			index += 4;
+			FM.WriteUint32Swapped(stream, index, image.Height);
+			index += 4;
+			FM.WriteUint32Swapped(stream, index, image.Size);
+			index += 4;
+			FM.WriteByteArray(stream, index, image.Data);
+			index += (int)image.Size;
+		}
+
+		return stream;
 	}
 }

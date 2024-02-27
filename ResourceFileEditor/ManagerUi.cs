@@ -42,7 +42,8 @@ namespace ResourceFileEditor
         {
             InitializeComponent();
             this.Text = DEFAULT_TITLE;
-            this.manager = new ManagerImpl(this);
+			      this.Icon = Icon.ExtractAssociatedIcon(System.Reflection.Assembly.GetExecutingAssembly().Location);
+			      this.manager = new ManagerImpl(this);
             toolStripStatusLabel1.Text = "";
             toolStripStatusLabel2.Text = "";
             toolStripStatusLabel3.Text = "";
