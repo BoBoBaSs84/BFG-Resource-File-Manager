@@ -286,7 +286,7 @@ namespace ResourceFileEditor.Manager
 
                         break;
                     case "bimage":
-                        exportedFile = Image.ImageManager.LoadImage(file);
+                        exportedFile = Image.ImageManager.LoadImageToBitmap(file);
                         //Second Pass in order to make a valid tga
                         ImageResult imageResult = ImageResult.FromStream(exportedFile, ColorComponents.RedGreenBlueAlpha);
                         byte[] data = imageResult.Data;

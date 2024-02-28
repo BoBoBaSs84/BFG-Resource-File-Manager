@@ -1,4 +1,6 @@
 ﻿using ResourceFileEditor.Exceptions;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +12,7 @@ public class ImageManager
 {
 	private const uint IMAGE_FILE_MAGIC = ('B' << 0) | ('I' << 8) | ('M' << 16) | (10 << 24);
 
-	public static Stream LoadImage(Stream file)
+	public static Stream LoadImageToBitmap(Stream file)
 	{
 		Stream img = null;
 
@@ -131,6 +133,21 @@ public class ImageManager
 	/// <exception cref="FileFormatException">If the provided image is not a bimage format.</exception>
 	public static BimageFile LoadBimage(Stream stream)
 	{
+		byte[] array = new byte[stream.Length];
+		_ = stream.Read(array, 0, array.Length);
+		return LoadBimage(array);
+	}
+
+	/// <summary>
+	/// Loads a <see cref="BimageFile"/> from the provided <see cref="byte"/> array.
+	/// </summary>
+	/// <param name="buffer">The bimage file as <see cref="byte"/> array.</param>
+	/// <returns>The created <see cref="BimageFile"/> instance.</returns>
+	/// <exception cref="FileFormatException">If the provided image is not a bimage format.</exception>
+	public static BimageFile LoadBimage(byte[] buffer)
+	{
+		using MemoryStream stream = new(buffer);
+
 		int index = default;
 		DateTime timeStamp = DateTime.FromBinary((long)FM.ReadUint64Swapped(stream, index));
 		index += 8;
@@ -180,14 +197,79 @@ public class ImageManager
 	}
 
 	/// <summary>
-	/// Saves a provided <see cref="BimageFile"/> into a <see cref="Stream"/>.
+	/// Loads a <see cref="BimageFile"/> from the provided <see cref="byte"/> array.
+	/// </summary>
+	/// <remarks>
+	/// Out of the box ImageSharp supports the following image formats:<para/>
+	/// <c>Bmp, Gif, Jpeg, Pbm, Png, Tiff, Tga, WebP</c>
+	/// </remarks>
+	/// <param name="stream"></param>
+	/// <returns>The created <see cref="BimageFile"/> instance.</returns>
+	/// <exception cref="FileFormatException"></exception>
+	public static BimageFile LoadImage(Stream stream)
+	{
+		byte[] array = new byte[stream.Length];
+		_ = stream.Read(array, 0, array.Length);
+		return LoadImage(array);
+	}
+
+	/// <summary>
+	/// Loads a <see cref="BimageFile"/> from the provided <see cref="byte"/> array.
+	/// </summary>
+	/// <remarks>
+	/// Out of the box ImageSharp supports the following image formats:<para/>
+	/// <c>Bmp, Gif, Jpeg, Pbm, Png, Tiff, Tga, WebP</c>
+	/// </remarks>
+	/// <param name="buffer">The image file as <see cref="byte"/> array.</param>
+	/// <returns>The created <see cref="BimageFile"/> instance.</returns>
+	/// <exception cref="FileFormatException"></exception>
+	public static BimageFile LoadImage(byte[] buffer)
+	{
+		using SixLabors.ImageSharp.Image tgaImage = SixLabors.ImageSharp.Image.Load(buffer);
+		int numberOfLevel = DivisibleByTwo(tgaImage.Width < tgaImage.Height ? tgaImage.Width : tgaImage.Height);
+
+		// currently caping this to 6 mipmaps
+		if (numberOfLevel > 7)
+			numberOfLevel = 7;
+
+		DateTime timeStamp = DateTime.UtcNow;
+		TextureType textureType = TextureType.TT_2D;
+		TextureFormat textureFormat = TextureFormat.FMT_DXT5;
+		ColorFormat colorFormat = ColorFormat.CFM_NORMAL_DXT5;
+		uint width = (uint)tgaImage.Width;
+		uint height = (uint)tgaImage.Height;
+
+		List<Bimage> bimages = [];
+		for (int i = 0; i < 7; i++)
+		{
+			using MemoryStream stream = new();
+			tgaImage.SaveAsTga(stream);
+
+			uint iLevel = (uint)i;
+			uint iDestZ = 0;
+			uint iWidth = (uint)tgaImage.Width;
+			uint iHeight = (uint)tgaImage.Height;
+			uint iSize = (uint)stream.Length;
+			byte[] iData = stream.ToArray();
+
+			Bimage bimage = new(iLevel, iDestZ, iWidth, iHeight, iSize, iData);
+			bimages.Add(bimage);
+
+			tgaImage.Mutate(x => x.Resize(tgaImage.Width / 2, tgaImage.Height / 2));
+		}
+
+		return new(timeStamp, textureType, textureFormat, colorFormat, width, height, [.. bimages]);
+	}
+
+	/// <summary>
+	/// Saves a provided <see cref="BimageFile"/> into a <see cref="byte"/> array.
 	/// </summary>
 	/// <param name="bimage">The <see cref="BimageFile"/> to save.</param>
-	/// <returns>A <see cref="Stream"/> that is <u><b>not</b></u> disposed.</returns>
-	public static Stream SaveBimage(BimageFile bimage)
+	/// <returns>The bimage file as <see cref="byte"/> array.</returns>
+	public static byte[] SaveBimage(BimageFile bimage)
 	{
+		using MemoryStream stream = new();
 		int index = default;
-		MemoryStream stream = new();
 
 		FM.WriteUint64Swapped(stream, index, (ulong)bimage.TimeStamp.Ticks);
 		index += 8;
@@ -222,6 +304,22 @@ public class ImageManager
 			index += (int)image.Size;
 		}
 
-		return stream;
+		return stream.ToArray();
+	}
+
+	/// <summary>
+	/// Returns how often is a number divisible by 2.
+	/// </summary>
+	/// <param name="value">The number to divide.</param>
+	/// <returns>The count.</returns>
+	private static int DivisibleByTwo(int value)
+	{
+		int count = default;
+		while (value > 0 && (value % 2 == 0))
+		{
+			count++;
+			value /= 2;
+		}
+		return count;
 	}
 }

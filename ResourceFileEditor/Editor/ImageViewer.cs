@@ -55,7 +55,7 @@ namespace ResourceFileEditor.Editor
             pictureBox.BackgroundImage = generateBackgound();
             if (relativePath.EndsWith("bimage"))
             {
-                pictureBox.Image = loadBitmap(ImageManager.LoadImage(file));
+                pictureBox.Image = loadBitmap(ImageManager.LoadImageToBitmap(file));
             }
             else
             {
