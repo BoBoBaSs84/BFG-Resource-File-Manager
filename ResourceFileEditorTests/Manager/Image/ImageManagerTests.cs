@@ -1,7 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SixLabors.ImageSharp;
-using ResourceFileEditor.Manager.Image;
-using SixLabors.ImageSharp.Processing;
+﻿using ResourceFileEditor.Manager.Image;
 
 namespace ResourceFileEditorTests.Manager.Image;
 
@@ -52,7 +49,7 @@ public sealed class ImageManagerTests
 		Assert.AreNotEqual(DateTime.MinValue, bimageFile.TimeStamp);
 		Assert.AreEqual(TextureType.TT_2D, bimageFile.TextureType);
 		Assert.AreEqual(TextureFormat.FMT_DXT5, bimageFile.TextureFormat);
-		Assert.AreEqual(ColorFormat.CFM_NORMAL_DXT5, bimageFile.ColorFormat);
+		Assert.AreEqual(ColorFormat.CFM_DEFAULT, bimageFile.ColorFormat);
 		Assert.AreEqual(256u, bimageFile.Width);
 		Assert.AreEqual(256u, bimageFile.Height);
 		Assert.AreEqual((int)bimageFile.Levels, bimageFile.Images.Length);
@@ -70,7 +67,7 @@ public sealed class ImageManagerTests
 		Assert.AreNotEqual(DateTime.MinValue, bimageFile.TimeStamp);
 		Assert.AreEqual(TextureType.TT_2D, bimageFile.TextureType);
 		Assert.AreEqual(TextureFormat.FMT_DXT5, bimageFile.TextureFormat);
-		Assert.AreEqual(ColorFormat.CFM_NORMAL_DXT5, bimageFile.ColorFormat);
+		Assert.AreEqual(ColorFormat.CFM_DEFAULT, bimageFile.ColorFormat);
 		Assert.AreEqual(256u, bimageFile.Width);
 		Assert.AreEqual(256u, bimageFile.Height);
 		Assert.AreEqual((int)bimageFile.Levels, bimageFile.Images.Length);

@@ -17,11 +17,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyDescriptionAttribute("This is a file manager for DOOM 3 BFG Edition/DOOM 3 (2019) .resources files. It " +
     "allows you to see, extract, delete, preview and edit the files inside .resources" +
     " files. Also it allows you to create and edit .resource files.")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.228.1132")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.228.1132-Development+479c5feb6a2c6c649816f453a0ba58d99328500b")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.32.838")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.32.838-Development+5e5742c3e275d44139742d81d4b086a76cd84c30")]
 [assembly: System.Reflection.AssemblyProductAttribute("BFG Resource File Manager")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ResourceFileEditor")]
-[assembly: System.Reflection.AssemblyVersionAttribute("1.0.228.1132")]
+[assembly: System.Reflection.AssemblyVersionAttribute("1.0.32.838")]
 [assembly: System.Reflection.AssemblyMetadataAttribute("RepositoryUrl", "https://github.com/MadDeCoDeR/BFG-Resource-File-Manager")]
 [assembly: System.Resources.NeutralResourcesLanguageAttribute("en-US")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ResourceFileEditorTests")]

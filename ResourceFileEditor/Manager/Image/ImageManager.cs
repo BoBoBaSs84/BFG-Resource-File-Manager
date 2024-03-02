@@ -10,7 +10,7 @@ namespace ResourceFileEditor.Manager.Image;
 
 public class ImageManager
 {
-	private const uint IMAGE_FILE_MAGIC = ('B' << 0) | ('I' << 8) | ('M' << 16) | (10 << 24);
+	private const uint BIMAGE_FILE_MAGIC = ('B' << 0) | ('I' << 8) | ('M' << 16) | (10 << 24);
 
 	public static Stream LoadImageToBitmap(Stream file)
 	{
@@ -21,7 +21,7 @@ public class ImageManager
 		index += 8;
 		uint magic = FM.ReadUint32Swapped(file, index);
 		index += 4;
-		if (magic == IMAGE_FILE_MAGIC)
+		if (magic == BIMAGE_FILE_MAGIC)
 		{
 			uint texType = FM.ReadUint32Swapped(file, index);
 			index += 4;
@@ -154,7 +154,7 @@ public class ImageManager
 		uint magic = FM.ReadUint32Swapped(stream, index);
 		index += 4;
 
-		if (magic != IMAGE_FILE_MAGIC)
+		if (magic != BIMAGE_FILE_MAGIC)
 			throw new FileFormatException("The provided image is not a bimage format.");
 
 		TextureType textureType = (TextureType)FM.ReadUint32Swapped(stream, index);
@@ -235,12 +235,12 @@ public class ImageManager
 		DateTime timeStamp = DateTime.UtcNow;
 		TextureType textureType = TextureType.TT_2D;
 		TextureFormat textureFormat = TextureFormat.FMT_DXT5;
-		ColorFormat colorFormat = ColorFormat.CFM_NORMAL_DXT5;
+		ColorFormat colorFormat = ColorFormat.CFM_DEFAULT;
 		uint width = (uint)tgaImage.Width;
 		uint height = (uint)tgaImage.Height;
 
 		List<Bimage> bimages = [];
-		for (int i = 0; i < 7; i++)
+		for (int i = 0; i < numberOfLevel; i++)
 		{
 			using MemoryStream stream = new();
 			tgaImage.SaveAsTga(stream);
