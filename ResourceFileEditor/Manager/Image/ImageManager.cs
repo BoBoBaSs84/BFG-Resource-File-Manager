@@ -1,4 +1,7 @@
-﻿using ResourceFileEditor.Exceptions;
+﻿using BCnEncoder.Decoder;
+using BCnEncoder.ImageSharp;
+using BCnEncoder.Shared;
+using ResourceFileEditor.Exceptions;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using System;
@@ -70,22 +73,24 @@ public class ImageManager
 		Stream imageStream = new MemoryStream();
 		if (format is not ((uint)TextureFormat.FMT_RGBA8) and not ((uint)TextureFormat.FMT_RGB565))
 		{
-			BCnEncoder.Decoder.BcDecoder decoder = new();
-			BCnEncoder.Shared.CompressionFormat compressionFormat = BCnEncoder.Shared.CompressionFormat.BC1WithAlpha;
+			BcDecoder decoder = new();
+			CompressionFormat compressionFormat = CompressionFormat.Bc1WithAlpha;
 			switch ((TextureFormat)format)
 			{
 				case TextureFormat.FMT_DXT5:
-					compressionFormat = BCnEncoder.Shared.CompressionFormat.BC3;
+					compressionFormat = CompressionFormat.Bc3;
 					break;
 				case TextureFormat.FMT_DXT1:
-					compressionFormat = BCnEncoder.Shared.CompressionFormat.BC1;
+					compressionFormat = CompressionFormat.Bc1;
 					break;
 				case TextureFormat.FMT_ALPHA:
 				case TextureFormat.FMT_LUM8:
-					compressionFormat = BCnEncoder.Shared.CompressionFormat.BC4;
+					compressionFormat = CompressionFormat.Bc4;
 					break;
 			}
-			data = decoder.DecodeRawData(image.data, (int)image.width, (int)image.height, compressionFormat);
+			Image<SixLabors.ImageSharp.PixelFormats.Rgba32> imageData = decoder.DecodeRawToImageRgba32(image.data, (int)image.width, (int)image.height, compressionFormat);
+			imageData.SaveAsTga(imageStream);
+			return imageStream;
 		}
 		else if (format == (uint)TextureFormat.FMT_RGB565)
 		{
@@ -155,7 +160,7 @@ public class ImageManager
 		index += 4;
 
 		if (magic != BIMAGE_FILE_MAGIC)
-			throw new FileFormatException("The provided image is not a bimage format.");
+			throw new Exceptions.FileFormatException("The provided image is not a bimage format.");
 
 		TextureType textureType = (TextureType)FM.ReadUint32Swapped(stream, index);
 		index += 4;
